@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>iframe tester</title>
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/reset-2.0.min.css">
+
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Firza Radio Padang</title>
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/reset-2.0.min.css">
+
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firza Radio - Vinyl Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            transition: background 1.5s ease;
+            overflow-x: hidden;
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .player-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .radio-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px var(--neon-color, #ff6b6b),
+                         0 0 40px var(--neon-color, #ff6b6b);
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 20px var(--neon-color, #ff6b6b),
+                             0 0 40px var(--neon-color, #ff6b6b);
+            }
+            to {
+                text-shadow: 0 0 30px var(--neon-color, #ff6b6b),
+                             0 0 60px var(--neon-color, #ff6b6b),
+                             0 0 80px var(--neon-color, #ff6b6b);
+            }
+        }
+
+        .vinyl-player {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(145deg, #2a2a3e, #1a1a28);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .vinyl-record {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #111, #1a1a1a, #111, #1a1a1a, #111, #1a1a1a, #111);
+            box-shadow: 0 0 0 12px #0a0a0a,
+                        0 0 30px rgba(0, 0, 0, 0.8),
+                        inset 0 0 50px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .vinyl-record::before {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(
+                circle at center,
+                transparent 0px,
+                transparent 2px,
+                rgba(255, 255, 255, 0.03) 2px,
+                rgba(255, 255, 255, 0.03) 3px
+            );
+        }
+
+        .vinyl-record.playing {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cover-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 50%;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(145deg, #2a2a3e, #1a1a28);
+            z-index: 5;
+        }
+
+        .cover-art {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .cover-art.loading {
+            opacity: 0.5;
+        }
+
+        /* Neon Rings */
+        .neon-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 56%;
+            height: 56%;
+            border-radius: 50%;
+            border: 3px solid var(--neon-color, #ff6b6b);
+            box-shadow: 0 0 15px var(--neon-color, #ff6b6b),
+                        0 0 30px var(--neon-color, #ff6b6b),
+                        inset 0 0 15px var(--neon-color, #ff6b6b);
+            animation: neonPulse 2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 6;
+        }
+
+        .neon-ring-outer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65%;
+            height: 65%;
+            border-radius: 50%;
+            border: 2px solid var(--neon-secondary, #4ecdc4);
+            box-shadow: 0 0 10px var(--neon-secondary, #4ecdc4),
+                        0 0 20px var(--neon-secondary, #4ecdc4);
+            animation: neonPulse2 3s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 4;
+        }
+
+        @keyframes neonPulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 15px var(--neon-color, #ff6b6b),
+                            0 0 30px var(--neon-color, #ff6b6b),
+                            inset 0 0 15px var(--neon-color, #ff6b6b);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 25px var(--neon-color, #ff6b6b),
+                            0 0 50px var(--neon-color, #ff6b6b),
+                            inset 0 0 25px var(--neon-color, #ff6b6b);
+            }
+        }
+
+        @keyframes neonPulse2 {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.03);
+                opacity: 0.4;
+            }
+        }
+
+        .center-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #333, #111);
+            border-radius: 50%;
+            border: 2px solid #444;
+            z-index: 10;
+        }
+
+        /* Tonearm */
+        .tonearm-container {
+            position: absolute;
+            top: -15px;
+            right: -25px;
+            width: 130px;
+            height: 180px;
+            z-index: 20;
+        }
+
+        .tonearm-base {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 35px;
+            height: 35px;
+            background: radial-gradient(circle at 30% 30%, #555, #222);
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .tonearm {
+            position: absolute;
+            top: 17px;
+            right: 17px;
+            width: 100px;
+            height: 6px;
+            background: linear-gradient(to bottom, #888, #444, #888);
+            border-radius: 3px;
+            transform-origin: right center;
+            transform: rotate(30deg);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .tonearm.playing {
+            transform: rotate(-40deg);
+        }
+
+        .tonearm::before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: -4px;
+            width: 16px;
+            height: 14px;
+            background: linear-gradient(to bottom, #999, #555);
+            border-radius: 3px;
+        }
+
+        .tonearm::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: -1px;
+            width: 12px;
+            height: 8px;
+            background: linear-gradient(to bottom, #ccc, #888);
+            border-radius: 2px;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 15;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--neon-color, #ff6b6b);
+            border-radius: 50%;
+            animation: spinLoader 0.8s linear infinite;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Info Display */
+        .info-display {
+            margin-top: 25px;
+            text-align: center;
+            min-height: 90px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .now-playing-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .song-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+            line-height: 1.4;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            max-width: 380px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .artist-name {
+            font-size: 1rem;
+            color: var(--neon-color, #ff6b6b);
+            opacity: 0.9;
+            max-width: 380px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .play-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(145deg, var(--neon-color, #ff6b6b), var(--neon-dark, #cc5555));
+            color: #fff;
+            font-size: 1.6rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4),
+                        0 0 20px rgba(255, 107, 107, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.5),
+                        0 0 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .play-btn .fa-play {
+            margin-left: 4px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 18px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .volume-control i {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 90px;
+            height: 5px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--neon-color, #ff6b6b);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-color, #ff6b6b);
+            transition: transform 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Live Indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 8px 18px;
+            background: rgba(255, 59, 59, 0.15);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 59, 59, 0.3);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff3b3b;
+            border-radius: 50%;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 59, 59, 0); }
+        }
+
+        .live-text {
+            color: #ff3b3b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Visualizer */
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            height: 25px;
+            margin-top: 15px;
+        }
+
+        .bar {
+            width: 5px;
+            height: 5px;
+            background: linear-gradient(to top, var(--neon-color, #ff6b6b), var(--neon-secondary, #4ecdc4));
+            border-radius: 2px;
+        }
+
+        .bar.active {
+            animation: barBounce 0.4s ease infinite;
+        }
+
+        @keyframes barBounce {
+            0%, 100% { height: 5px; }
+            50% { height: 22px; }
+        }
+
+        .bar:nth-child(1), .bar:nth-child(9) { animation-delay: 0s; }
+        .bar:nth-child(2), .bar:nth-child(8) { animation-delay: 0.1s; }
+        .bar:nth-child(3), .bar:nth-child(7) { animation-delay: 0.2s; }
+        .bar:nth-child(4), .bar:nth-child(6) { animation-delay: 0.3s; }
+        .bar:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Status Message */
+        .status-msg {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 450px) {
+            .vinyl-player {
+                width: 300px;
+                height: 300px;
+                padding: 20px;
+            }
+
+            .radio-title {
+                font-size: 1.6rem;
+            }
+
+            .tonearm-container {
+                right: -18px;
+                transform: scale(0.75);
+            }
+
+            .song-title {
+                font-size: 1.1rem;
+            }
+
+            .controls {
+                gap: 15px;
+            }
+
+            .volume-slider {
+                width: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+
+    <div class="player-container">
+        <h1 class="radio-title">FIRZA RADIO PADANG</h1>
+
+        <div class="vinyl-player">
+            <div class="vinyl-record" id="vinyl">
+                <div class="neon-ring-outer"></div>
+                <div class="neon-ring"></div>
+
+                <div class="cover-container">
+                    <img src="https://frpadang.netlify.app/img/default.jpg" 
+                         alt="Cover Art" 
+                         class="cover-art" 
+                         id="coverArt">
+                </div>
+
+                <div class="center-hole"></div>
+
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <div class="tonearm-container">
+                <div class="tonearm-base"></div>
+                <div class="tonearm" id="tonearm"></div>
+            </div>
+        </div>
+
+        <div class="info-display">
+            <p class="now-playing-label">🎵 Now Playing</p>
+            <h2 class="song-title" id="songTitle">Firza Radio</h2>
+            <p class="artist-name" id="artistName">Live Streaming</p>
+        </div>
+
+        <div class="controls">
+            <div class="volume-control">
+                <i class="fas fa-volume-down" id="volIcon"></i>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
+                <i class="fas fa-volume-up"></i>
+            </div>
+
+            <button class="play-btn" id="playBtn" aria-label="Play/Pause">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span class="live-text">Live Streaming</span>
+        </div>
+
+        <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <p class="status-msg" id="statusMsg"></p>
+    </div>
+
+    <audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const CONFIG = {
+            idzeno: '5k7g2w3gtkeuv',
+            streamUrl: 'https://stream.zeno.fm/ptkeryrsu0ttv',
+            defaultCover: 'https://frpadang.netlify.app/img/default.jpg',
+            updateInterval: 10000
+        };
+
+        // ========== DOM ELEMENTS ==========
+        const $ = id => document.getElementById(id);
+        const audioPlayer = $('audioPlayer');
+        const playBtn = $('playBtn');
+        const vinyl = $('vinyl');
+        const tonearm = $('tonearm');
+        const coverArt = $('coverArt');
+        const songTitle = $('songTitle');
+        const artistName = $('artistName');
+        const volumeSlider = $('volumeSlider');
+        const loadingOverlay = $('loadingOverlay');
+        const statusMsg = $('statusMsg');
+        const bars = document.querySelectorAll('.bar');
+
+        let isPlaying = false;
+        let currentSong = '';
+        let currentArtist = '';
+        let currentCover = CONFIG.defaultCover;
+
+        // ========== PARTICLES ==========
+        function createParticles() {
+            const container = $('particles');
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (12 + Math.random() * 8) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // ========== ZENO API ==========
+        function zeno() {
+            const zurl = `https://zenoplay.zenomedia.com/api/zenofm/nowplaying/${CONFIG.idzeno}/?rand=${Math.random()}`;
+            
+            fetch(zurl)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Zeno API:', data);
+                    processNowPlaying(data);
+                })
+                .catch(err => {
+                    console.log('API Error:', err);
+                    trySSE();
+                });
+        }
+
+        // ========== SSE FALLBACK ==========
+        let eventSource = null;
+        
+        function trySSE() {
+            if (eventSource) return;
+            
+            try {
+                eventSource = new EventSource(`https://api.zeno.fm/mounts/metadata/subscribe/${CONFIG.idzeno}`);
+                
+                eventSource.onmessage = function(e) {
+                    try {
+                        const data = JSON.parse(e.data);
+                        console.log('SSE:', data);
+                        processNowPlaying(data);
+                    } catch (err) {}
+                };
+                
+                eventSource.onerror = function() {
+                    eventSource.close();
+                    eventSource = null;
+                };
+            } catch (e) {}
+        }
+
+        // ========== PROCESS NOW PLAYING ==========
+        function processNowPlaying(data) {
+            let title = '';
+            let artist = '';
+            let cover = '';
+
+            // Extract data from various structures
+            const sources = [
+                data,
+                data?.now_playing,
+                data?.nowplaying,
+                data?.current_track,
+                data?.data,
+                Array.isArray(data) ? data[0] : null
+            ].filter(Boolean);
+
+            for (const src of sources) {
+                if (!title) title = src.title || src.song || src.name || src.streamTitle || src.track || '';
+                if (!artist) artist = src.artist || src.artistName || src.artist_name || '';
+                if (!cover) cover = src.art || src.artwork || src.image || src.cover || src.albumart || src.imageurl || '';
+            }
+
+            // Parse "Artist - Title" format
+            if (title && title.includes(' - ') && !artist) {
+                const parts = title.split(' - ');
+                artist = parts[0].trim();
+                title = parts.slice(1).join(' - ').trim();
+            }
+
+            // Clean up
+            title = title.trim() || 'Firza Radio';
+            artist = artist.trim() || 'Live Streaming';
+
+            // Update display
+            songTitle.textContent = title;
+            artistName.textContent = artist;
+
+            // Check if song changed - fetch new cover
+            if (title !== currentSong || artist !== currentArtist) {
+                currentSong = title;
+                currentArtist = artist;
+                
+                // If API has cover, use it
+                if (cover && cover.startsWith('http')) {
+                    loadCover(cover);
+                } else {
+                    // Search for cover art using iTunes/Deezer
+                    searchCoverArt(title, artist);
+                }
+            }
+        }
+
+        // ========== SEARCH COVER ART ==========
+        function searchCoverArt(title, artist) {
+            // Skip if default values
+            if (title === 'Firza Radio' || artist === 'Live Streaming') {
+                loadCover(CONFIG.defaultCover);
+                return;
+            }
+
+            coverArt.classList.add('loading');
+            statusMsg.textContent = '🔍 Searching cover...';
+
+            // Clean search terms
+            const cleanTitle = title.replace(/\(.*?\)|\[.*?\]/g, '').trim();
+            const cleanArtist = artist.replace(/\(.*?\)|\[.*?\]/g, '').trim();
+            const searchQuery = encodeURIComponent(`${cleanArtist} ${cleanTitle}`);
+
+            // Try iTunes first
+            fetchiTunesCover(searchQuery)
+                .then(coverUrl => {
+                    if (coverUrl) {
+                        loadCover(coverUrl);
+                    } else {
+                        // Fallback to Deezer
+                        return fetchDeezerCover(searchQuery);
+                    }
+                })
+                .then(coverUrl => {
+                    if (coverUrl) {
+                        loadCover(coverUrl);
+                    } else {
+                        // Use default if nothing found
+                        loadCover(CONFIG.defaultCover);
+                    }
+                })
+                .catch(() => {
+                    loadCover(CONFIG.defaultCover);
+                });
+        }
+
+        // ========== ITUNES API ==========
+        function fetchiTunesCover(query) {
+            return fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('iTunes:', data);
+                    if (data.results && data.results.length > 0) {
+                        // Get high resolution artwork (600x600)
+                        let artwork = data.results[0].artworkUrl100;
+                        if (artwork) {
+                            artwork = artwork.replace('100x100', '600x600');
+                            return artwork;
+                        }
+                    }
+                    return null;
+                })
+                .catch(() => null);
+        }
+
+        // ========== DEEZER API ==========
+        function fetchDeezerCover(query) {
+            // Use CORS proxy for Deezer
+            return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.deezer.com/search?q=${query}&limit=1`)}`)
+                .then(res => res.json())
+                .then(response => {
+                    const data = JSON.parse(response.contents);
+                    console.log('Deezer:', data);
+                    if (data.data && data.data.length > 0) {
+                        return data.data[0].album?.cover_big || data.data[0].album?.cover_medium;
+                    }
+                    return null;
+                })
+                .catch(() => null);
+        }
+
+        // ========== LOAD COVER ==========
+        function loadCover(url) {
+            if (!url) url = CONFIG.defaultCover;
+            
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = function() {
+                coverArt.src = url;
+                coverArt.classList.remove('loading');
+                currentCover = url;
+                extractColors(img);
+                statusMsg.textContent = '';
+            };
+            
+            img.onerror = function() {
+                console.log('Cover load failed:', url);
+                if (url !== CONFIG.defaultCover) {
+                    loadCover(CONFIG.defaultCover);
+                } else {
+                    coverArt.classList.remove('loading');
+                    applyColors(255, 107, 107);
+                }
+            };
+            
+            img.src = url;
+        }
+
+        // ========== EXTRACT COLORS ==========
+        function extractColors(img) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.height = 50;
+                ctx.drawImage(img, 0, 0, 50, 50);
+                
+                const data = ctx.getImageData(0, 0, 50, 50).data;
+                let r = 0, g = 0, b = 0, count = 0;
+
+                for (let i = 0; i < data.length; i += 20) {
+                    if (data[i + 3] > 128) {
+                        r += data[i];
+                        g += data[i + 1];
+                        b += data[i + 2];
+                        count++;
+                    }
+                }
+
+                if (count > 0) {
+                    r = Math.min(255, Math.round((r / count) * 1.3));
+                    g = Math.min(255, Math.round((g / count) * 1.3));
+                    b = Math.min(255, Math.round((b / count) * 1.3));
+                    
+                    const brightness = (r + g + b) / 3;
+                    if (brightness < 80) {
+                        const boost = 80 / Math.max(brightness, 1);
+                        r = Math.min(255, r * boost);
+                        g = Math.min(255, g * boost);
+                        b = Math.min(255, b * boost);
+                    }
+                    
+                    applyColors(Math.round(r), Math.round(g), Math.round(b));
+                }
+            } catch (e) {
+                applyColors(255, 107, 107);
+            }
+        }
+
+        // ========== APPLY COLORS ==========
+        function applyColors(r, g, b) {
+            const root = document.documentElement.style;
+            const primary = `rgb(${r},${g},${b})`;
+            const dark = `rgb(${r*0.6|0},${g*0.6|0},${b*0.6|0})`;
+            const secondary = `rgb(${(255-r+100)/2|0},${(255-g+100)/2|0},${(255-b+150)/2|0})`;
+
+            root.setProperty('--neon-color', primary);
+            root.setProperty('--neon-dark', dark);
+            root.setProperty('--neon-secondary', secondary);
+
+            document.body.style.background = `linear-gradient(135deg, 
+                rgb(${r*0.1|0},${g*0.1|0},${b*0.1|0}),
+                rgb(${r*0.08|0},${g*0.08|0},${b*0.12|0}),
+                rgb(${r*0.12|0},${g*0.12|0},${b*0.08|0}))`;
+
+            playBtn.style.background = `linear-gradient(145deg, ${primary}, ${dark})`;
+            playBtn.style.boxShadow = `0 8px 25px ${primary}66, 0 0 20px ${primary}33`;
+        }
+
+        // ========== PLAY/PAUSE ==========
+        function togglePlay() {
+            isPlaying ? pause() : play();
+        }
+
+        function play() {
+            loadingOverlay.classList.add('show');
+            statusMsg.textContent = 'Connecting...';
+            
+            audioPlayer.src = CONFIG.streamUrl;
+            
+            audioPlayer.play()
+                .then(() => {
+                    isPlaying = true;
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    vinyl.classList.add('playing');
+                    tonearm.classList.add('playing');
+                    loadingOverlay.classList.remove('show');
+                    bars.forEach(bar => bar.classList.add('active'));
+                    statusMsg.textContent = '▶ Playing';
+                })
+                .catch(err => {
+                    console.error('Play failed:', err);
+                    loadingOverlay.classList.remove('show');
+                    statusMsg.textContent = 'Click play to start';
+                });
+        }
+
+        function pause() {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+            isPlaying = false;
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            vinyl.classList.remove('playing');
+            tonearm.classList.remove('playing');
+            bars.forEach(bar => bar.classList.remove('active'));
+            statusMsg.textContent = '⏸ Paused';
+        }
+
+        // ========== VOLUME ==========
+        volumeSlider.addEventListener('input', function() {
+            const vol = this.value / 100;
+            audioPlayer.volume = vol;
+            const icon = $('volIcon');
+            icon.className = vol === 0 ? 'fas fa-volume-mute' : 
+                            vol < 0.5 ? 'fas fa-volume-down' : 'fas fa-volume-up';
+        });
+
+        // ========== AUDIO EVENTS ==========
+        audioPlayer.addEventListener('waiting', () => loadingOverlay.classList.add('show'));
+        audioPlayer.addEventListener('playing', () => loadingOverlay.classList.remove('show'));
+        audioPlayer.addEventListener('error', () => {
+            loadingOverlay.classList.remove('show');
+            if (isPlaying) {
+                statusMsg.textContent = 'Reconnecting...';
+                setTimeout(play, 3000);
+            }
+        });
+
+        // ========== INIT ==========
+        function init() {
+            createParticles();
+            audioPlayer.volume = 0.8;
+            playBtn.addEventListener('click', togglePlay);
+            
+            // Load default cover and colors
+            loadCover(CONFIG.defaultCover);
+            
+            // Start fetching now playing
+            zeno();
+            setInterval(zeno, CONFIG.updateInterval);
+            
+            // Try SSE
+            setTimeout(trySSE, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
+    
+  </body>
+  
+</html>
